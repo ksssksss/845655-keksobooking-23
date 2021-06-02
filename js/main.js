@@ -1,39 +1,26 @@
 function getRandomInteger (minNumber, maxNumber) {
-  try {
-    if ((minNumber >= 0) && (maxNumber >= 0)) {
-      if (minNumber > maxNumber) {
-        const temp = minNumber;
-        minNumber = maxNumber;
-        maxNumber = temp;
-      }
-
-      return Math.floor(minNumber + Math.random()*(maxNumber + 1 - minNumber));
-    }
-
+  if (minNumber < 0 || maxNumber < 0) {
     throw new ReferenceError('Ошибка: отрицательный диапазон.');
-  } catch(err) {
-    // alert(err.message);
   }
+  if (minNumber > maxNumber) {
+    const temp = minNumber;
+    minNumber = maxNumber;
+    maxNumber = temp;
+  }
+  return Math.floor(minNumber + Math.random()*(maxNumber + 1 - minNumber));
 }
 
-function getRandomCoordinate (minNumber, maxNumber, decimalPlaces = 0) {
-  try {
-    if ((minNumber >= 0) && (maxNumber >= 0) && (minNumber <= 180) && ((maxNumber <= 180))) {
-      if (minNumber > maxNumber) {
-        const temp = minNumber;
-        minNumber = maxNumber;
-        maxNumber = temp;
-      }
-
-      return (minNumber + Math.random() * (maxNumber - minNumber)).toFixed(decimalPlaces);
-    }
-
-    throw new ReferenceError('Ошибка: диапазон должен быть в пределах [0, 180]');
+function getRandomFloat (minNumber, maxNumber, decimalPlaces = 0) {
+  if (minNumber < 0 || maxNumber <0) {
+    throw new ReferenceError('Ошибка: отрицательный диапазон.');
   }
-  catch (err) {
-    // alert(err.message);
+  if (minNumber > maxNumber) {
+    const temp = minNumber;
+    minNumber = maxNumber;
+    maxNumber = temp;
   }
+  return (minNumber + Math.random() * (maxNumber - minNumber)).toFixed(decimalPlaces);
 }
 
-getRandomInteger(10, 1);
-getRandomCoordinate(10.2, 170);
+getRandomInteger(1, 12);
+getRandomFloat(10.2, 170, 4);
