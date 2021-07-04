@@ -25,7 +25,7 @@ function createRandomAd () {
   const avatarNumber = getUniqueAvatarNumber();
 
   const result = {
-    autor: {
+    author: {
       avatar: `img/avatars/user${avatarNumber < 10 ? `0${avatarNumber}` : avatarNumber}.png`,
     },
 
@@ -36,7 +36,6 @@ function createRandomAd () {
 
     offer: {
       title: 'Title',
-      // address: locationLat + ', ' + locationLng,
       address: `${locationLat}, ${locationLng}`,
       price: getRandomInteger(3000, MAX_PRICE),
       type: getRandomArrayElement(BUILDING_TYPES),
