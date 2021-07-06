@@ -7,3 +7,4 @@ const dataForCards = getAds();
 
 initAdFilters();
 renderCard(mapCanvas, getCard(dataForCards[0]));
+initAdFilters();
