@@ -6,6 +6,9 @@ const price = adForm.querySelector('#price');
 const type = adForm.querySelector('#type');
 const roomNumber = adForm.querySelector('#room_number');
 const capacity = adForm.querySelector('#capacity');
+const capacityOptions = capacity.querySelectorAll('option');
+const timeIn = adForm.querySelector('#timein');
+const timeOut = adForm.querySelector('#timeout');
 
 const MIN_TITLE_LENGTH = 30;
 const MAX_TITLE_LENGTH = 100;
@@ -15,6 +18,13 @@ const TYPE_MIN_PRICE = {
   'hotel': 3000,
   'house': 5000,
   'palace': 10000,
+};
+
+const ROOM_CAPACITY = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0],
 };
 
 function initForms (...forms) {
@@ -32,9 +42,25 @@ function initForms (...forms) {
 
 const initAdFilters = initForms(adForm, filters);
 
+const capacityOptionsDisabled = (roomValue) => {
+  capacityOptions.forEach((option) => {
+    option.setAttribute('disabled', 'disabled');
+  });
+
+  ROOM_CAPACITY[roomValue].forEach((capacityAmount) => {
+    capacityOptions.forEach((option) => {
+      if (+option.value === capacityAmount) {
+        option.removeAttribute('disabled');
+        option.setAttribute('selected', 'selected');}
+    });
+  });
+};
+
 const capacityValidityChecks = () => {
   const roomValue = +roomNumber.value;
   const capacityValue = +capacity.value;
+
+  capacityOptionsDisabled(roomValue);
 
   if (roomValue === 1 && capacityValue !== 1) {
     capacity.setCustomValidity('Вместимость одной комнаты: 1 гость');
@@ -81,11 +107,19 @@ price.addEventListener('input', () => {
 });
 
 capacity.addEventListener('change', () => {
-  capacityValidityChecks();
+  capacityValidityChecks(); // на всякий случай валидируем
 });
 
 roomNumber.addEventListener('change', () => {
   capacityValidityChecks();
+});
+
+timeIn.addEventListener('change', (evt) => {
+  timeOut.value = evt.target.value;
+});
+
+timeOut.addEventListener('change', (evt) => {
+  timeIn.value = evt.target.value;
 });
 
 export {initAdFilters};
