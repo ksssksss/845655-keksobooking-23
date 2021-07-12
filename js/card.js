@@ -38,7 +38,9 @@ function getCard (adCard) {
   cardElement.querySelector('.popup__text--time').textContent = `Заезд после ${adCard.offer.checkin}, выезд до ${adCard.offer.checkout}`;
 
   cardElement.querySelector('.popup__features').innerHTML = '';
-  cardElement.querySelector('.popup__features').appendChild(createFeatureList(adCard.offer.features));
+  if (adCard.offer.features) {
+    cardElement.querySelector('.popup__features').appendChild(createFeatureList(adCard.offer.features));
+  }
 
   adCard.offer.description ? cardElement.querySelector('.popup__description').textContent = adCard.offer.description : cardElement.querySelector('.popup__description').remove();
 
