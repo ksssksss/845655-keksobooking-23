@@ -1,3 +1,7 @@
+import {sendData} from './fetch.js';
+import {showMessage} from './messages.js';
+import {setMainMarkerDefault} from './map.js';
+
 const adForm = document.querySelector('.ad-form');
 const filters = document.querySelector('.map__filters');
 
@@ -38,6 +42,21 @@ function initForms (...forms) {
       }
     });
   };
+}
+
+function resetForm () {
+  // потом сбросить фильтры еще !
+  adForm.reset();
+  setMainMarkerDefault();
+}
+
+function submitSuccess () {
+  resetForm();
+  showMessage(true);
+}
+
+function submitError () {
+  showMessage(false);
 }
 
 const initAdFilters = initForms(adForm, filters);
@@ -120,6 +139,19 @@ timeIn.addEventListener('change', (evt) => {
 
 timeOut.addEventListener('change', (evt) => {
   timeIn.value = evt.target.value;
+});
+
+adForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  const formData = new FormData(evt.target);
+
+  sendData(formData)
+    .then(() => submitSuccess())
+    .catch(() => submitError());
+});
+
+adForm.addEventListener('reset', () => {
+  resetForm();
 });
 
 export {initAdFilters};
