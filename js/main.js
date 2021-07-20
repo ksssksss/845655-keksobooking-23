@@ -1,8 +1,11 @@
-import {getAds} from './data.js';
 import {initAdFilters} from './form.js';
 import {initMap} from './map.js';
+import {getData} from './fetch.js';
+// import {showServerError} from './messages.js';
 
-const dataForCards = getAds();
 
 initAdFilters();
-initMap(dataForCards);
+
+const dataForCards = getData();
+dataForCards.then((data) => initMap(data));
+

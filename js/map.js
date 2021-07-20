@@ -1,5 +1,6 @@
 import {initAdFilters} from './form.js';
 import {getCard} from './card.js';
+import '../leaflet/leaflet-messagebox.js'; // Leaflet-плагин для отображения сообщений
 
 const TOKYO_LAT = 35.681700;
 const TOKYO_LNG = 139.753891;
@@ -40,8 +41,18 @@ const mainMarker = L.marker(
   },
 );
 
-// Объявление карты
-const map = L.map('map-canvas');
+// Объявление карты c messagebox для отображения серверных ошибок
+const map = L.map('map-canvas', { 'messagebox': true });
+
+// Отображение сообщения на карте
+function showMapMessage (message) {
+  map.messagebox.show(message);
+}
+
+// Удаление сообщения на карте
+function removeMapMessage () {
+  map.messagebox.hide();
+}
 
 // Добавление слоя Mapbox Streets
 function setTitleLayer() {
@@ -61,6 +72,11 @@ function addMainMarker() {
   });
 
   mainMarker.addTo(map);
+}
+
+// Перевод главного маркера в наальное состояние
+function setMainMarkerDefault () {
+  mainMarker.setLatLng(L.latLng(TOKYO_LAT, TOKYO_LNG));
 }
 
 // Добавление маркеров похожих объявлений на карту
@@ -97,5 +113,5 @@ function initMap(ads) {
   addMarkers(ads);
 }
 
-export {initMap};
+export {initMap, setMainMarkerDefault, showMapMessage, removeMapMessage};
 
