@@ -3,8 +3,8 @@ import {showMapMessage} from '../js/map.js';
 const URL_GET = 'https://23.javascript.pages.academy/keksobooking/data';
 const URL_POST = 'https://23.javascript.pages.academy/keksobooking';
 
-function getData () {
-  return fetch(URL_GET)
+const getData = () => {
+  const data = fetch(URL_GET)
     .then((response) => {
       if (response.ok) {
         return response;
@@ -13,19 +13,18 @@ function getData () {
     })
     .then((response) => response.json())
     .catch((err) => showMapMessage(`Ошибка сервера: ${err}. Данные не загрузились.`));
-}
+  return data;
+};
 
-function sendData (body) {
-  return fetch(URL_POST,
+const sendData = (body) => {
+  const data = fetch(URL_POST,
     {
       method: 'POST',
-      // headers: {
-      //   'Content-Type': 'multipart/form-data',
-      // },
       body,
     },
   )
     .then((response) => response.ok ? Promise.resolve() : Promise.reject());
-}
+  return data;
+};
 
 export {getData, sendData};

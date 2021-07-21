@@ -8,7 +8,7 @@ const BUILDING_TYPES_RU = {
 const similarCardTemplate = document.querySelector('#card').content.querySelector('.popup');
 const imgTemplate = similarCardTemplate.querySelector('.popup__photo');
 
-function createFeatureList (features) {
+const createFeatureList = (features) => {
   const fragment = document.createDocumentFragment();
   features.forEach((item) => {
     const listItem = document.createElement('li');
@@ -16,9 +16,9 @@ function createFeatureList (features) {
     fragment.appendChild(listItem);
   });
   return fragment;
-}
+};
 
-function createImgList (imgUrls) {
+const createImgList = (imgUrls) => {
   const fragment = document.createDocumentFragment();
   imgUrls.forEach((img) => {
     const imgElement = imgTemplate.cloneNode(true);
@@ -26,9 +26,9 @@ function createImgList (imgUrls) {
     fragment.appendChild(imgElement);
   });
   return fragment;
-}
+};
 
-function getCard (adCard) {
+const getCard = (adCard) => {
   const cardElement = similarCardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__title').textContent = adCard.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = adCard.offer.address;
@@ -52,15 +52,15 @@ function getCard (adCard) {
   cardElement.querySelector('.popup__avatar').src = adCard.author.avatar;
 
   return cardElement;
-}
+};
 
 const renderCard = (container, card) => container.appendChild(card);
 
-function renderCards (container, cardsData) {
+const renderCards = (container, cardsData) => {
   cardsData.forEach((card) => {
     container.appendChild(card);
   });
-}
+};
 
 export {getCard, renderCard, renderCards};
 
