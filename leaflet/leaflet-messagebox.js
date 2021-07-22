@@ -1,7 +1,7 @@
 /*
 Leaflet.Messagebox
 Display a temporary text message on a map by Martijn Grendelman (https://github.com/tinuzz/)
-https://github.com/tinuzz/leaflet-messagebox
+Link: https://github.com/tinuzz/leaflet-messagebox
  */
 
 L.Control.Messagebox = L.Control.extend({
