@@ -19,7 +19,7 @@ const PHOTOS_ARRAY = [
 ];
 const getUniqueAvatarNumber = makeUniqueRandomIntegerGenerator(1, COUNT_ADS);
 
-function createRandomAd () {
+const createRandomAd = () => {
   const locationLat = getRandomFloat(MIN_LAT, MAX_LAT, 6);
   const locationLng = getRandomFloat(MIN_LNG, MAX_LNG, 6);
   const avatarNumber = getUniqueAvatarNumber();
@@ -51,11 +51,11 @@ function createRandomAd () {
 
   result.offer.title = `${result.offer.type[0].toUpperCase() + result.offer.type.slice(1)} for ${result.offer.guests} guests`;
   return result;
-}
+};
 
-function getAds (countAds = COUNT_ADS) {
+const getAds = (countAds = COUNT_ADS) => {
   const ads = new Array(countAds).fill(null).map(() => createRandomAd());
   return ads;
-}
+};
 
 export {getAds};

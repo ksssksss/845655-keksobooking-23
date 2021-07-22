@@ -1,9 +1,12 @@
 import {sendData} from './fetch.js';
 import {showMessage} from './messages.js';
 import {setMainMarkerDefault} from './map.js';
+import {resetFilters} from './filters.js';
+import {removePreviews} from './file-reader.js';
 
 const adForm = document.querySelector('.ad-form');
 const filters = document.querySelector('.map__filters');
+const resetButton = adForm.querySelector('.ad-form__reset');
 
 const title = adForm.querySelector('#title');
 const price = adForm.querySelector('#price');
@@ -31,35 +34,35 @@ const ROOM_CAPACITY = {
   100: [0],
 };
 
-function initForms (...forms) {
-  return function () {
-    forms.forEach((form) => {
-      const elementsForm =  form.children;
-      form.classList.toggle(`${form.classList.item(0)}--disabled`);
+const onTitleInput = () => {
+  const titleValue = title.value.length;
 
-      for (const element of elementsForm) {
-        element.toggleAttribute('disabled');
-      }
-    });
-  };
-}
+  if (titleValue < MIN_TITLE_LENGTH) {
+    title.setCustomValidity(`Должно быть больше ${MIN_TITLE_LENGTH} символов. Сейчас ${titleValue} сиволов.`);
+  } else if (titleValue > MAX_TITLE_LENGTH) {
+    title.setCustomValidity(`Должно быть меньше ${MAX_TITLE_LENGTH} символов. Сейчас ${titleValue} сиволов.`);
+  } else {
+    title.setCustomValidity('');
+  }
+};
 
-function resetForm () {
-  // потом сбросить фильтры еще !
-  adForm.reset();
-  setMainMarkerDefault();
-}
+const onTypeChange = () => {
+  const typeValue = type.value;
+  price.setAttribute('min', TYPE_MIN_PRICE[typeValue]);
+  price.setAttribute('placeholder', TYPE_MIN_PRICE[typeValue]);
+};
 
-function submitSuccess () {
-  resetForm();
-  showMessage(true);
-}
+const inPriceInput = () => {
+  const priceValue = +price.value;
 
-function submitError () {
-  showMessage(false);
-}
-
-const initAdFilters = initForms(adForm, filters);
+  if (priceValue < price.getAttribute('min')) {
+    price.setCustomValidity(`Стоимость должна быть больше ${price.getAttribute('min')}`);
+  } else if (priceValue > price.getAttribute('max')) {
+    price.setCustomValidity(`Стоимость должна быть меньше ${price.getAttribute('max')}`);
+  } else {
+    price.setCustomValidity('');
+  }
+};
 
 const capacityOptionsDisabled = (roomValue) => {
   capacityOptions.forEach((option) => {
@@ -94,65 +97,97 @@ const capacityValidityChecks = () => {
   }
 };
 
-title.addEventListener('input', () => {
-  const titleValue = title.value.length;
-
-  if (titleValue < MIN_TITLE_LENGTH) {
-    title.setCustomValidity(`Должно быть больше ${MIN_TITLE_LENGTH} символов. Сейчас ${titleValue} сиволов.`);
-  } else if (titleValue > MAX_TITLE_LENGTH) {
-    title.setCustomValidity(`Должно быть меньше ${MAX_TITLE_LENGTH} символов. Сейчас ${titleValue} сиволов.`);
-  } else {
-    title.setCustomValidity('');
-  }
-});
-
-type.addEventListener('change', () => {
-  const typeValue = type.value;
-
-  price.setAttribute('min', TYPE_MIN_PRICE[typeValue]);
-  price.setAttribute('placeholder', TYPE_MIN_PRICE[typeValue]);
-});
-
-price.addEventListener('input', () => {
-  const priceValue = +price.value;
-
-  if (priceValue < price.getAttribute('min')) {
-    price.setCustomValidity(`Стоимость должна быть больше ${price.getAttribute('min')}`);
-  } else if (priceValue > price.getAttribute('max')) {
-    price.setCustomValidity(`Стоимость должна быть меньше ${price.getAttribute('max')}`);
-  } else {
-    price.setCustomValidity('');
-  }
-});
-
-capacity.addEventListener('change', () => {
-  capacityValidityChecks(); // на всякий случай валидируем
-});
-
-roomNumber.addEventListener('change', () => {
+const onCapacityChange = () => {
   capacityValidityChecks();
-});
+};
 
-timeIn.addEventListener('change', (evt) => {
+const onRoomsChange = () => {
+  capacityValidityChecks();
+};
+
+const onTimeInChange = (evt) => {
   timeOut.value = evt.target.value;
-});
+};
 
-timeOut.addEventListener('change', (evt) => {
+const onTimeOutChange = (evt) => {
   timeIn.value = evt.target.value;
-});
+};
 
-adForm.addEventListener('submit', (evt) => {
+const resetForm = () => {
+  adForm.reset();
+  resetFilters();
+  removePreviews();
+  // сами генерируем событие, чтобы поменялась отрисовка объявлений
+  filters.dispatchEvent(new Event('change'));
+  setMainMarkerDefault();
+};
+
+const submitSuccess = () => {
+  showMessage(true);
+  resetForm();
+};
+
+const submitError = () => {
+  showMessage(false);
+};
+
+const onFormSubmit = (evt) => {
   evt.preventDefault();
   const formData = new FormData(evt.target);
 
   sendData(formData)
     .then(() => submitSuccess())
     .catch(() => submitError());
-});
+};
 
-adForm.addEventListener('reset', () => {
+const onFormReset = (evt) => {
+  evt.preventDefault();
   resetForm();
-});
+};
+
+const addFormListeners = () => {
+  title.addEventListener('input', onTitleInput);
+  type.addEventListener('change', onTypeChange);
+  price.addEventListener('input', inPriceInput);
+  capacity.addEventListener('change', onCapacityChange); // на всякий случай валидируем
+  roomNumber.addEventListener('change', onRoomsChange);
+  timeIn.addEventListener('change', onTimeInChange);
+  timeOut.addEventListener('change', onTimeOutChange);
+  adForm.addEventListener('submit', onFormSubmit);
+  resetButton.addEventListener('click', onFormReset);
+};
+
+const removeFormListeners = () => {
+  title.removeEventListener('input', onTitleInput);
+  price.removeEventListener('input', inPriceInput);
+  capacity.removeEventListener('change', onCapacityChange); // на всякий случай валидируем
+  roomNumber.removeEventListener('change', onRoomsChange);
+  timeIn.removeEventListener('change', onTimeInChange);
+  timeOut.removeEventListener('change', onTimeOutChange);
+  adForm.removeEventListener('submit', onFormSubmit);
+  resetButton.removeEventListener('click', onFormReset);
+};
+
+function initForms (...forms) {
+  return function () {
+    forms.forEach((form) => {
+      const elementsForm =  form.children;
+      form.classList.toggle(`${form.classList.item(0)}--disabled`);
+
+      for (const element of elementsForm) {
+        element.toggleAttribute('disabled');
+      }
+
+      // Добавление или удаление обработчиков событий для валидации формы
+      if (form.classList.contains(`${form.classList.item(0)}--disabled`)) {
+        removeFormListeners();
+      }
+      addFormListeners();
+    });
+  };
+}
+
+const initAdFilters = initForms(adForm, filters);
 
 export {initAdFilters};
 

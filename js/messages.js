@@ -2,20 +2,27 @@ const mainTag = document.querySelector('main');
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
+const isEscEvent = (evt) => {
+  const keyEsc = evt.key === 'Escape' || evt.key === 'Esc';
+  return keyEsc;
+};
 
-function isEscEvent(evt) {
-  return evt.key === 'Escape' || evt.key === 'Esc';
-}
-
-function onMessageClick () {
+const onMessageClick = () => {
   removeMessage();
-}
+};
 
-function onMessageEscKeydown (evt) {
+const onMessageEscKeydown = (evt) => {
   if (isEscEvent(evt)) {
     evt.preventDefault();
     removeMessage();
   }
+};
+
+// функции объявлены декларативно для создания их интерпретатором до выполнения кода
+function removeMessage () {
+  mainTag.removeChild(mainTag.lastChild);
+  document.removeEventListener('click', onMessageClick);
+  document.removeEventListener('keydown', onMessageEscKeydown);
 }
 
 function showMessage (status) {
@@ -29,12 +36,6 @@ function showMessage (status) {
   mainTag.appendChild(element);
   document.addEventListener('click', onMessageClick, { once: true });
   document.addEventListener('keydown', onMessageEscKeydown, { once: true });
-}
-
-function removeMessage() {
-  mainTag.removeChild(mainTag.lastChild);
-  document.removeEventListener('click', onMessageClick);
-  document.removeEventListener('keydown', onMessageEscKeydown);
 }
 
 export {showMessage};

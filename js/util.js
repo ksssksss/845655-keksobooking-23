@@ -1,24 +1,26 @@
-function getRandomInteger (minNumber, maxNumber) {
+const getRandomInteger = (minNumber, maxNumber) => {
   const a = Math.ceil(Math.min(Math.abs(minNumber), Math.abs(maxNumber)));
   const b = Math.floor(Math.max(Math.abs(minNumber), Math.abs(maxNumber)));
   return Math.floor(a + Math.random()*(b + 1 - a));
-}
+};
 
-function getRandomFloat (minNumber, maxNumber, decimalPlaces = 0) {
+const getRandomFloat = (minNumber, maxNumber, decimalPlaces = 0) => {
   const a = Math.min(Math.abs(minNumber), Math.abs(maxNumber));
   const b = Math.max(Math.abs(minNumber), Math.abs(maxNumber));
   return (a + Math.random() * (b - a)).toFixed(decimalPlaces);
-}
+};
 
-function getRandomArrayElement (array) {
-  return array[getRandomInteger(0, array.length-1)];
-}
+const getRandomArrayElement = (array) => {
+  const randomElement = array[getRandomInteger(0, array.length-1)];
+  return randomElement;
+};
 
-function getRandomArray (array) {
-  return array.filter(() => Math.random() > 0.5);
-}
+const getRandomArray = (array) => {
+  const randomArray = array.filter(() => Math.random() > 0.5);
+  return randomArray;
+};
 
-function makeUniqueRandomIntegerGenerator (a, b) {
+const makeUniqueRandomIntegerGenerator = (a, b) => {
   const previousValues = [];
   return () => {
     let currentValue = getRandomInteger(a, b);
@@ -31,6 +33,6 @@ function makeUniqueRandomIntegerGenerator (a, b) {
     previousValues.push(currentValue);
     return currentValue;
   };
-}
+};
 
 export {getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArray, makeUniqueRandomIntegerGenerator};
