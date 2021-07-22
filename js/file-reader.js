@@ -5,6 +5,7 @@ const avatarPreview = document.querySelector('.ad-form-header__preview img');
 const photoInput = document.querySelector('.ad-form__upload input[type=file]');
 const photoPreview = document.querySelector('.ad-form__photo');
 
+// Валидация типа файла
 const validityFileType = (file, types) => {
   const fileName = file.name.toLowerCase();
   const matches = types.some((it) => {
@@ -14,6 +15,7 @@ const validityFileType = (file, types) => {
   return matches;
 };
 
+// Обработчик изменения аватара и показа превью
 const onAvatarInputChange = () => {
   const file = avatarInput.files[0];
   if (validityFileType(file, FILE_TYPES)) {
@@ -25,6 +27,7 @@ const onAvatarInputChange = () => {
   }
 };
 
+// Обработчик добавления фото жилья и показа превью
 const onPhotoInputChange = () => {
   const file = photoInput.files[0];
   if (validityFileType(file, FILE_TYPES)) {

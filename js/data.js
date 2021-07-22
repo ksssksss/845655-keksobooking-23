@@ -19,6 +19,7 @@ const PHOTOS_ARRAY = [
 ];
 const getUniqueAvatarNumber = makeUniqueRandomIntegerGenerator(1, COUNT_ADS);
 
+// Создание рандомного объявления
 const createRandomAd = () => {
   const locationLat = getRandomFloat(MIN_LAT, MAX_LAT, 6);
   const locationLng = getRandomFloat(MIN_LNG, MAX_LNG, 6);
@@ -53,6 +54,7 @@ const createRandomAd = () => {
   return result;
 };
 
+// Получение рандомных объявлений
 const getAds = (countAds = COUNT_ADS) => {
   const ads = new Array(countAds).fill(null).map(() => createRandomAd());
   return ads;
