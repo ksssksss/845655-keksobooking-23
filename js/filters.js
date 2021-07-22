@@ -5,6 +5,7 @@ const PRICE_VALUE = {
   HIGH: 50000,
 };
 
+// Контейнер для выбранного фильтра
 const selectedFilter = {
   type: 'any',
   price: 'any',
@@ -29,12 +30,14 @@ const filterByPrice = (data, filterPrice) => {
   }
 };
 
+// Фильтрация объявлений по всем критериям
 const filterAll = (data, filter) => {
   const currentFilter = filterByType(data, filter.type) && filterByPrice(data, filter.price) && filterByRooms(data, filter.rooms) &&
   filterByGuests(data, filter.guests);
   return currentFilter;
 };
 
+// Сброс фильтра
 const resetFilters = () => {
   selectedFilter.type = 'any';
   selectedFilter.price = 'any';
@@ -44,6 +47,7 @@ const resetFilters = () => {
   mapFilters.reset();
 };
 
+// Получение текущего фильтра
 const getCurrentFilter = (changeFilter) => {
   if (changeFilter) {
     switch(changeFilter.target.id) {

@@ -8,6 +8,7 @@ const BUILDING_TYPES_RU = {
 const similarCardTemplate = document.querySelector('#card').content.querySelector('.popup');
 const imgTemplate = similarCardTemplate.querySelector('.popup__photo');
 
+// Создание преимуществ
 const createFeatureList = (features) => {
   const fragment = document.createDocumentFragment();
   features.forEach((item) => {
@@ -18,6 +19,7 @@ const createFeatureList = (features) => {
   return fragment;
 };
 
+// Создание изображений жилья
 const createImgList = (imgUrls) => {
   const fragment = document.createDocumentFragment();
   imgUrls.forEach((img) => {
@@ -28,6 +30,8 @@ const createImgList = (imgUrls) => {
   return fragment;
 };
 
+
+// Получение карточки объявления
 const getCard = (adCard) => {
   const cardElement = similarCardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__title').textContent = adCard.offer.title;
@@ -54,8 +58,10 @@ const getCard = (adCard) => {
   return cardElement;
 };
 
+// Отрисовка одного объявления
 const renderCard = (container, card) => container.appendChild(card);
 
+// Отрисовка всех объявлений
 const renderCards = (container, cardsData) => {
   cardsData.forEach((card) => {
     container.appendChild(card);

@@ -34,6 +34,7 @@ const ROOM_CAPACITY = {
   100: [0],
 };
 
+// Валидация заголовка объявления
 const onTitleInput = () => {
   const titleValue = title.value.length;
 
@@ -46,12 +47,14 @@ const onTitleInput = () => {
   }
 };
 
+// Валидация типа жилья
 const onTypeChange = () => {
   const typeValue = type.value;
   price.setAttribute('min', TYPE_MIN_PRICE[typeValue]);
   price.setAttribute('placeholder', TYPE_MIN_PRICE[typeValue]);
 };
 
+// Валидация стоимости жилья
 const inPriceInput = () => {
   const priceValue = +price.value;
 
@@ -64,6 +67,7 @@ const inPriceInput = () => {
   }
 };
 
+// Наложение ограничений по вместимости жилья
 const capacityOptionsDisabled = (roomValue) => {
   capacityOptions.forEach((option) => {
     option.setAttribute('disabled', 'disabled');
@@ -78,6 +82,7 @@ const capacityOptionsDisabled = (roomValue) => {
   });
 };
 
+// Валидации количества гостей
 const capacityValidityChecks = () => {
   const roomValue = +roomNumber.value;
   const capacityValue = +capacity.value;
@@ -113,6 +118,7 @@ const onTimeOutChange = (evt) => {
   timeIn.value = evt.target.value;
 };
 
+// Сброс формы
 const resetForm = () => {
   adForm.reset();
   resetFilters();
@@ -131,6 +137,7 @@ const submitError = () => {
   showMessage(false);
 };
 
+// Обработчик при отправке формы
 const onFormSubmit = (evt) => {
   evt.preventDefault();
   const formData = new FormData(evt.target);
@@ -140,11 +147,13 @@ const onFormSubmit = (evt) => {
     .catch(() => submitError());
 };
 
+// Обработчик при сбросе формы
 const onFormReset = (evt) => {
   evt.preventDefault();
   resetForm();
 };
 
+// Добавление всех обработчиков
 const addFormListeners = () => {
   title.addEventListener('input', onTitleInput);
   type.addEventListener('change', onTypeChange);
@@ -157,6 +166,7 @@ const addFormListeners = () => {
   resetButton.addEventListener('click', onFormReset);
 };
 
+// Удаление всех обработчиков
 const removeFormListeners = () => {
   title.removeEventListener('input', onTitleInput);
   price.removeEventListener('input', inPriceInput);
@@ -168,6 +178,7 @@ const removeFormListeners = () => {
   resetButton.removeEventListener('click', onFormReset);
 };
 
+// Инициализация форм
 function initForms (...forms) {
   return function () {
     forms.forEach((form) => {
@@ -187,6 +198,7 @@ function initForms (...forms) {
   };
 }
 
+// Инициализация форм отпарвки объявления и фильтра
 const initAdFilters = initForms(adForm, filters);
 
 export {initAdFilters};

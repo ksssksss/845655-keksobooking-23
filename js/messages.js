@@ -2,15 +2,18 @@ const mainTag = document.querySelector('main');
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
+// Обработчик клавищи Esc
 const isEscEvent = (evt) => {
   const keyEsc = evt.key === 'Escape' || evt.key === 'Esc';
   return keyEsc;
 };
 
+// Обработчик нажатия на сообщение
 const onMessageClick = () => {
   removeMessage();
 };
 
+// Обработчик нажатия Esc при открытом сообщении
 const onMessageEscKeydown = (evt) => {
   if (isEscEvent(evt)) {
     evt.preventDefault();
@@ -18,7 +21,8 @@ const onMessageEscKeydown = (evt) => {
   }
 };
 
-// функции объявлены декларативно для создания их интерпретатором до выполнения кода
+// Функции объявлены декларативно для создания их интерпретатором до выполнения кода
+
 function removeMessage () {
   mainTag.removeChild(mainTag.lastChild);
   document.removeEventListener('click', onMessageClick);

@@ -1,3 +1,4 @@
+// Рассчет весов преимуществ для объявления
 const getFeaturesRank = (ad, {features}) => {
   const adFeatures = ad.offer.features;
   let rank = 0;
@@ -15,6 +16,7 @@ const getFeaturesRank = (ad, {features}) => {
   return rank;
 };
 
+// Функция сортировки по весу преимущества
 function compareFeatures (filter) {
   return function (a, b) {
     const rankA = getFeaturesRank(a, filter);
