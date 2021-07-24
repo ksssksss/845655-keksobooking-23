@@ -114,8 +114,12 @@ const addMarkers = (ads, filter) => {
   }
 
   for (let i = 0; i < ads.length; i++) {
-    if (filterAll(ads[i], filter) && filteredAds.length < AD_COUNT) {
-      filteredAds.push(ads[i]);
+    if (filteredAds.length < AD_COUNT) {
+      if (filterAll(ads[i], filter)) {
+        filteredAds.push(ads[i]);
+      }
+    } else {
+      break;
     }
   }
 
