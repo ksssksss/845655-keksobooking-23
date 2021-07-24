@@ -1,21 +1,30 @@
 import {initAdFilters} from './form.js';
 import {getCard} from './card.js';
 import {getData} from './fetch.js';
-import {getCurrentFilter, filterAll} from './filters.js';
+import {getCurrentFilter, filterAll, mapFilters} from './filters.js';
 import {debounce} from './utils/debounce.js';
-import {compareFeatures} from './sort.js';
 import {uploadPreviews} from './file-reader.js';
 import '../leaflet/leaflet-messagebox.js'; // Leaflet-плагин для отображения сообщений
 
 const TOKYO_LAT = 35.681700;
 const TOKYO_LNG = 139.753891;
+const COORDINATE_DIGIT = 5;
+
 const MAIN_MARKER_WIDTH = 52;
 const MAIN_MARKER_HEIGHT = 52;
 const MARKER_WIDTH = 40;
 const MARKER_HEIGHT = 40;
 
+const MAP_ZOOM = 13;
+
+// Количество выводимых объявлений на карту
+const AD_COUNT = 10;
+
+// Задержка для устранения дребезга
+const DEBOUNCE_DELAY = 500;
+
 const address = document.querySelector('#address');
-const mapFilters = document.querySelector('.map__filters');
+// const mapFilters = document.querySelector('.map__filters');
 
 // Контейнер все маркеров объявлений
 let markers = [];
@@ -82,7 +91,7 @@ const setTitleLayer = () => {
 const addMainMarker = () => {
   mainMarker.on('move', (evt) => {
     const coordinates = evt.target.getLatLng();
-    address.value = `${coordinates.lat.toFixed(5)}, ${coordinates.lng.toFixed(5)}`;
+    address.value = `${coordinates.lat.toFixed(COORDINATE_DIGIT)}, ${coordinates.lng.toFixed(COORDINATE_DIGIT)}`;
   });
 
   mainMarker.addTo(map);
@@ -92,39 +101,43 @@ const addMainMarker = () => {
 const setMainMarkerDefault = () => {
   mainMarker.setLatLng(L.latLng(TOKYO_LAT, TOKYO_LNG));
   const mainCoordinates = mainMarker.getLatLng();
-  address.value = `${mainCoordinates.lat.toFixed(5)}, ${mainCoordinates.lng.toFixed(5)}`;
+  address.value = `${mainCoordinates.lat.toFixed(COORDINATE_DIGIT)}, ${mainCoordinates.lng.toFixed(COORDINATE_DIGIT)}`;
 };
 
 // Добавление маркеры отфильтрованных объявлений на карту
 const addMarkers = (ads, filter) => {
-  const compareFeaturesFilter = compareFeatures(filter);
+  const filteredAds = [];
 
   if (markers.length) {
     removeMarkers(markers);
     markers = [];
   }
 
-  ads
-    .slice()
-    .filter((ad) => filterAll(ad, filter))
-    .sort(compareFeaturesFilter)
-    .slice(0, 10)
-    .forEach((ad) => {
-      const marker = L.marker(
-        {
-          lat: ad.location.lat,
-          lng: ad.location.lng,
-        },
-        {
-          markerIcon,
-        },
-      );
-      marker
-        .addTo(map)
-        .bindPopup(getCard(ad));
-      markers.push(marker);
-    });
+  for (let i = 0; i < ads.length; i++) {
+    if (filterAll(ads[i], filter) && filteredAds.length < AD_COUNT) {
+      filteredAds.push(ads[i]);
+    }
+  }
+
+  filteredAds.forEach((ad) => {
+    const marker = L.marker(
+      {
+        lat: ad.location.lat,
+        lng: ad.location.lng,
+      },
+      {
+        markerIcon,
+      },
+    );
+    marker
+      .addTo(map)
+      .bindPopup(getCard(ad));
+    markers.push(marker);
+  });
 };
+
+// Устранение дребезга при изменении фильтра
+const onFiltersChange = debounce(addMarkers, DEBOUNCE_DELAY);
 
 // Действия при загрузке карты
 const onLoadMap = () => {
@@ -132,12 +145,12 @@ const onLoadMap = () => {
   addMainMarker();
   initAdFilters();
   uploadPreviews();
-  address.value = `${mainCoordinates.lat.toFixed(5)}, ${mainCoordinates.lng.toFixed(5)}`;
+  address.value = `${mainCoordinates.lat.toFixed(COORDINATE_DIGIT)}, ${mainCoordinates.lng.toFixed(COORDINATE_DIGIT)}`;
   getData()
     .then((data) => {
       addMarkers(data, getCurrentFilter());
       mapFilters.addEventListener('change', (evt) => {
-        debounce(addMarkers(data, getCurrentFilter(evt)), 500);
+        onFiltersChange(data, getCurrentFilter(evt));
       });
     });
 };
@@ -146,7 +159,7 @@ const onLoadMap = () => {
 const initMap = () => {
   map
     .on('load', onLoadMap)
-    .setView([TOKYO_LAT, TOKYO_LNG], 13);
+    .setView([TOKYO_LAT, TOKYO_LNG], MAP_ZOOM);
 
   setTitleLayer();
 };

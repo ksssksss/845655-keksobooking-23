@@ -1,6 +1,7 @@
 import {getRandomInteger, getRandomFloat, getRandomArrayElement, getRandomArray, makeUniqueRandomIntegerGenerator} from './util.js';
 
 const COUNT_ADS = 10;
+const MIN_PRICE = 3000;
 const MAX_PRICE = 40000;
 const MAX_ROOMS = 6;
 const MAX_GUESTS = 20;
@@ -8,6 +9,7 @@ const MIN_LAT = 35.65000;
 const MAX_LAT = 35.70000;
 const MIN_LNG = 139.70000;
 const MAX_LNG = 139.80000;
+const COORDINATE_DIGIT = 6;
 const BUILDING_TYPES = ['palace', 'flat', 'house', 'bungalow', 'hotel'];
 const CHECKIN_TIMES = ['12:00', '13:00', '14:00'];
 const CHECKOUT_TIMES = ['12:00', '13:00', '14:00'];
@@ -21,8 +23,8 @@ const getUniqueAvatarNumber = makeUniqueRandomIntegerGenerator(1, COUNT_ADS);
 
 // Создание рандомного объявления
 const createRandomAd = () => {
-  const locationLat = getRandomFloat(MIN_LAT, MAX_LAT, 6);
-  const locationLng = getRandomFloat(MIN_LNG, MAX_LNG, 6);
+  const locationLat = getRandomFloat(MIN_LAT, MAX_LAT, COORDINATE_DIGIT);
+  const locationLng = getRandomFloat(MIN_LNG, MAX_LNG, COORDINATE_DIGIT);
   const avatarNumber = getUniqueAvatarNumber();
 
   const result = {
@@ -38,7 +40,7 @@ const createRandomAd = () => {
     offer: {
       title: 'Title',
       address: `${locationLat}, ${locationLng}`,
-      price: getRandomInteger(3000, MAX_PRICE),
+      price: getRandomInteger(MIN_PRICE, MAX_PRICE),
       type: getRandomArrayElement(BUILDING_TYPES),
       rooms: getRandomInteger(1, MAX_ROOMS),
       guests: getRandomInteger(1, MAX_GUESTS),

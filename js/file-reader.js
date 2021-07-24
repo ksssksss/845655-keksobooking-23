@@ -1,4 +1,6 @@
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+const IMG_WIDTH = 70;
+const IMG_HEIGHT = 70;
 
 const avatarInput = document.querySelector('.ad-form__field input[type=file]');
 const avatarPreview = document.querySelector('.ad-form-header__preview img');
@@ -6,7 +8,7 @@ const photoInput = document.querySelector('.ad-form__upload input[type=file]');
 const photoPreview = document.querySelector('.ad-form__photo');
 
 // Валидация типа файла
-const validityFileType = (file, types) => {
+const validateFileType = (file, types) => {
   const fileName = file.name.toLowerCase();
   const matches = types.some((it) => {
     const someName = fileName.endsWith(it);
@@ -18,7 +20,7 @@ const validityFileType = (file, types) => {
 // Обработчик изменения аватара и показа превью
 const onAvatarInputChange = () => {
   const file = avatarInput.files[0];
-  if (validityFileType(file, FILE_TYPES)) {
+  if (validateFileType(file, FILE_TYPES)) {
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       avatarPreview.src = reader.result;
@@ -30,12 +32,12 @@ const onAvatarInputChange = () => {
 // Обработчик добавления фото жилья и показа превью
 const onPhotoInputChange = () => {
   const file = photoInput.files[0];
-  if (validityFileType(file, FILE_TYPES)) {
+  if (validateFileType(file, FILE_TYPES)) {
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       const imgElement = document.createElement('img');
-      imgElement.width = 70;
-      imgElement.height = 70;
+      imgElement.width = IMG_WIDTH;
+      imgElement.height = IMG_HEIGHT;
       imgElement.src = reader.result;
       imgElement.style.zIndex = 1;
       photoPreview.appendChild(imgElement);

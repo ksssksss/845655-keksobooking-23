@@ -5,6 +5,7 @@ const BUILDING_TYPES_RU = {
   bungalow: 'Бунгало',
   hotel: 'Отель',
 };
+
 const similarCardTemplate = document.querySelector('#card').content.querySelector('.popup');
 const imgTemplate = similarCardTemplate.querySelector('.popup__photo');
 

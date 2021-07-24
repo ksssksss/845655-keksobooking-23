@@ -1,21 +1,9 @@
 import {sendData} from './fetch.js';
 import {showMessage} from './messages.js';
 import {setMainMarkerDefault} from './map.js';
-import {resetFilters} from './filters.js';
+import {resetFilters, mapFilters} from './filters.js';
 import {removePreviews} from './file-reader.js';
 
-const adForm = document.querySelector('.ad-form');
-const filters = document.querySelector('.map__filters');
-const resetButton = adForm.querySelector('.ad-form__reset');
-
-const title = adForm.querySelector('#title');
-const price = adForm.querySelector('#price');
-const type = adForm.querySelector('#type');
-const roomNumber = adForm.querySelector('#room_number');
-const capacity = adForm.querySelector('#capacity');
-const capacityOptions = capacity.querySelectorAll('option');
-const timeIn = adForm.querySelector('#timein');
-const timeOut = adForm.querySelector('#timeout');
 
 const MIN_TITLE_LENGTH = 30;
 const MAX_TITLE_LENGTH = 100;
@@ -33,6 +21,31 @@ const ROOM_CAPACITY = {
   3: [1, 2, 3],
   100: [0],
 };
+
+const ROOM_NUMBER = {
+  ONE_ROOM: 1,
+  TWO_ROOMS: 2,
+  THREE_ROOMS: 3,
+  ONE_HUNDRED_ROOMS: 100,
+};
+
+const CAPACITY_VALUE = {
+  ONE_GUEST: 1,
+  TWO_GUESTS: 2,
+  NOT_FOR_GUESTS: 0,
+};
+
+const adForm = document.querySelector('.ad-form');
+const resetButton = adForm.querySelector('.ad-form__reset');
+
+const title = adForm.querySelector('#title');
+const price = adForm.querySelector('#price');
+const type = adForm.querySelector('#type');
+const roomNumber = adForm.querySelector('#room_number');
+const capacity = adForm.querySelector('#capacity');
+const capacityOptions = capacity.querySelectorAll('option');
+const timeIn = adForm.querySelector('#timein');
+const timeOut = adForm.querySelector('#timeout');
 
 // Валидация заголовка объявления
 const onTitleInput = () => {
@@ -55,7 +68,7 @@ const onTypeChange = () => {
 };
 
 // Валидация стоимости жилья
-const inPriceInput = () => {
+const onPriceInput = () => {
   const priceValue = +price.value;
 
   if (priceValue < price.getAttribute('min')) {
@@ -68,7 +81,7 @@ const inPriceInput = () => {
 };
 
 // Наложение ограничений по вместимости жилья
-const capacityOptionsDisabled = (roomValue) => {
+const setCapacityDisabled = (roomValue) => {
   capacityOptions.forEach((option) => {
     option.setAttribute('disabled', 'disabled');
   });
@@ -77,25 +90,25 @@ const capacityOptionsDisabled = (roomValue) => {
     capacityOptions.forEach((option) => {
       if (+option.value === capacityAmount) {
         option.removeAttribute('disabled');
-        option.setAttribute('selected', 'selected');}
+      }
     });
   });
 };
 
 // Валидации количества гостей
-const capacityValidityChecks = () => {
+const validateCapacity = () => {
   const roomValue = +roomNumber.value;
   const capacityValue = +capacity.value;
 
-  capacityOptionsDisabled(roomValue);
+  setCapacityDisabled(roomValue);
 
-  if (roomValue === 1 && capacityValue !== 1) {
+  if (roomValue === ROOM_NUMBER.ONE_ROOM && capacityValue !== CAPACITY_VALUE.ONE_GUEST) {
     capacity.setCustomValidity('Вместимость одной комнаты: 1 гость');
-  } else if (roomValue === 2 && capacityValue !== 1 && capacityValue !== 2) {
+  } else if (roomValue === ROOM_NUMBER.TWO_ROOMS && capacityValue !== CAPACITY_VALUE.ONE_GUEST && capacityValue !== CAPACITY_VALUE.TWO_GUESTS) {
     capacity.setCustomValidity('Вместимость двух комнат: 1 или 2 гостя');
-  } else if (roomValue === 3 && capacityValue === 0) {
+  } else if (roomValue === ROOM_NUMBER.THREE_ROOMS && capacityValue === CAPACITY_VALUE.NOT_FOR_GUESTS) {
     capacity.setCustomValidity('Вместимость трех комнат: 1, 2 или 3 гостя');
-  } else if (roomValue === 100 && capacityValue !== 0) {
+  } else if (roomValue === ROOM_NUMBER.ONE_HUNDRED_ROOMS && capacityValue !== CAPACITY_VALUE.NOT_FOR_GUESTS) {
     capacity.setCustomValidity('Сто комнат не предназначены для гостей. Возможен выбор: не для гостей');
   } else {
     capacity.setCustomValidity('');
@@ -103,11 +116,12 @@ const capacityValidityChecks = () => {
 };
 
 const onCapacityChange = () => {
-  capacityValidityChecks();
+  validateCapacity();
 };
 
-const onRoomsChange = () => {
-  capacityValidityChecks();
+const onRoomNumberChange = () => {
+  capacity.value = ROOM_CAPACITY[roomNumber.value][0];
+  validateCapacity();
 };
 
 const onTimeInChange = (evt) => {
@@ -124,7 +138,7 @@ const resetForm = () => {
   resetFilters();
   removePreviews();
   // сами генерируем событие, чтобы поменялась отрисовка объявлений
-  filters.dispatchEvent(new Event('change'));
+  mapFilters.dispatchEvent(new Event('change'));
   setMainMarkerDefault();
 };
 
@@ -138,7 +152,7 @@ const submitError = () => {
 };
 
 // Обработчик при отправке формы
-const onFormSubmit = (evt) => {
+const onAdFormSubmit = (evt) => {
   evt.preventDefault();
   const formData = new FormData(evt.target);
 
@@ -148,7 +162,7 @@ const onFormSubmit = (evt) => {
 };
 
 // Обработчик при сбросе формы
-const onFormReset = (evt) => {
+const onResetButtonClick = (evt) => {
   evt.preventDefault();
   resetForm();
 };
@@ -157,25 +171,25 @@ const onFormReset = (evt) => {
 const addFormListeners = () => {
   title.addEventListener('input', onTitleInput);
   type.addEventListener('change', onTypeChange);
-  price.addEventListener('input', inPriceInput);
+  price.addEventListener('input', onPriceInput);
   capacity.addEventListener('change', onCapacityChange); // на всякий случай валидируем
-  roomNumber.addEventListener('change', onRoomsChange);
+  roomNumber.addEventListener('change', onRoomNumberChange);
   timeIn.addEventListener('change', onTimeInChange);
   timeOut.addEventListener('change', onTimeOutChange);
-  adForm.addEventListener('submit', onFormSubmit);
-  resetButton.addEventListener('click', onFormReset);
+  adForm.addEventListener('submit', onAdFormSubmit);
+  resetButton.addEventListener('click', onResetButtonClick);
 };
 
 // Удаление всех обработчиков
 const removeFormListeners = () => {
   title.removeEventListener('input', onTitleInput);
-  price.removeEventListener('input', inPriceInput);
+  price.removeEventListener('input', onPriceInput);
   capacity.removeEventListener('change', onCapacityChange); // на всякий случай валидируем
-  roomNumber.removeEventListener('change', onRoomsChange);
+  roomNumber.removeEventListener('change', onRoomNumberChange);
   timeIn.removeEventListener('change', onTimeInChange);
   timeOut.removeEventListener('change', onTimeOutChange);
-  adForm.removeEventListener('submit', onFormSubmit);
-  resetButton.removeEventListener('click', onFormReset);
+  adForm.removeEventListener('submit', onAdFormSubmit);
+  resetButton.removeEventListener('click', onResetButtonClick);
 };
 
 // Инициализация форм
@@ -199,7 +213,7 @@ function initForms (...forms) {
 }
 
 // Инициализация форм отпарвки объявления и фильтра
-const initAdFilters = initForms(adForm, filters);
+const initAdFilters = initForms(adForm, mapFilters);
 
 export {initAdFilters};
 
